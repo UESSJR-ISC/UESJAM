@@ -1,0 +1,36 @@
+<form action="{{ url_for('signup_form') }}" method="POST">
+    <h5>Crea una cuenta</h5>
+    <p>
+        Registra una cuenta individual o de un equipo para 
+        poder participar en las GameJAM's inter-ues.
+    </p>
+    <hr>
+    <div class="form-group">
+        <label for="user-name">Nombre de usuario o equipo</label>
+        <input type="text" name="user-name" id="user-name" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="user-email">Correo de contacto</label>
+        <input type="text" name="user-email" id="user-email" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="user-password">Contraseña</label>
+        <input type="password" name="user-password" id="user-password" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="user-password-confirm">Confirmar contraseña</label>
+        <input type="password" name="user-password-confirm" id="user-password-confirm" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="ues-id">Unidad de Estudios Superiores</label>
+        <select name="ues-id" id="ues-id" class="form-control">
+            <option value="0">San Jose del Rincon</option>
+            <option value="1">El Oro</option>
+            <option value="2">Temascalsingo</option>
+        </select>
+    </div>
+    <hr>
+    <div class="form-group">
+        <button class="btn btn-primary">Crear cuenta</button>
+    </div>
+</form>

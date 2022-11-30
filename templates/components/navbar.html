@@ -1,0 +1,38 @@
+<div id="navbar">
+    <img
+        class="umb-icon"
+        src="{{ url_for('static', filename='img/umb-white.png') }}"
+        alt="UMB JAM Logo"><br>
+    <a class="btn btn-danger mt-3" href="{{ url_for('admin') }}">
+        <i class="bi bi-terminal-fill"></i>
+        Admin
+    </a><br>
+    <a class="btn btn-secondary mt-3" href="{{ url_for('home') }}">
+        <i class="bi bi-house"></i>
+        Inicio
+    </a><br>
+    <a class="btn btn-secondary mt-3" href="#">
+        <i class="bi bi-trophy"></i>
+        JAM's
+    </a><br>
+    <a class="btn btn-secondary mt-3" href="#">
+        <i class="bi bi-controller"></i>
+        Juegos
+    </a><br>
+    <a class="btn btn-secondary mt-3" href="#">
+        <i class="bi bi-people"></i>
+        Equipos
+    </a><br>
+    <a class="btn btn-secondary mt-3" href="{{ url_for('profile') }}">
+        <i class="bi bi-person"></i>
+        Perfil
+    </a><br>
+    <a class="btn btn-primary mt-3" href="#">
+        Dashboard
+    </a>
+    <hr>
+    <p>
+        Participa <a href="{{ url_for('signup') }}">creando una cuenta</a>
+        o <a href="{{ url_for('login') }}">iniciando sesion</a>.
+    </p>
+</div>

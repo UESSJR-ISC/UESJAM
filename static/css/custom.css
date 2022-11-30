@@ -1,0 +1,65 @@
+html, body {
+    color: #fff;
+    background-color: #1c1c1c;
+}
+
+hr {
+    border-color: #404040;
+}
+
+a {
+    color: #00ff95;
+}
+
+a:hover {
+    color: #20bd7c;
+}
+
+.btn {
+    border-radius: 30px;
+}
+
+.btn-primary {
+    background-color: #20bd7c;
+    border-color: #20bd7c;
+}
+
+.btn-primary:hover {
+    background-color: #009959;
+    border-color: #009959;
+}
+
+.btn-secondary {
+    background-color: #1c1c1c;
+    border-color: #1c1c1c;
+}
+
+.btn-secondary:hover {
+    background-color: #383838;
+    border-color: #383838;
+}
+
+.btn-danger {
+    background-color: #562227;
+    border-color: #562227;
+}
+
+.umb-icon {
+    width: 100px;
+    margin-left: 5px;
+}
+
+#navbar .btn {
+    font-size: 1.2rem;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#navbar .btn-primary {
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.5rem 0px 0.5rem 0px;
+    font-weight: bold;
+    text-align: center;
+}
