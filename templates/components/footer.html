@@ -1,20 +1,24 @@
 <div id="footer">
-    <div class="card text-white bg-dark">
-        <img
-            src="{{ url_for('static', filename='img/default-jam-cover.webp') }}"
-            class="card-img-top"
-            alt="JAM Image cover">
-        <div class="card-body">
-            <h5 class="card-title">¡Únete a esta JAM!</h5>
-            <p class="card-text">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Autem a sit fuga nemo officiis culpa, dolore aliquid tenetur!
-            </p>
-            <a href="#" class="btn btn-primary">
-                ¡Unirse!
-            </a>
+    {% if latest_jam != None %}
+        <small>¡Checa la JAM más reciente! <i class="bi bi-megaphone-fill"></i></small>
+        <div class="card text-white bg-dark">
+            <img
+                src="{{ url_for('static', filename='img/jam_covers/' + latest_jam.cover) }}"
+                class="card-img-top"
+                alt="JAM Image cover">
+            <div class="card-body">
+                <h5 class="card-title">{{ latest_jam.titulo }}</h5>
+                <p class="card-text">
+                    {{ latest_jam.descripcion }}
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="btn btn-primary">
+                    ¡Unirse!
+                </a>
+            </div>
         </div>
-    </div>
+    {% endif %}
     <hr>
     &copy; 2022 UES San Jose del Rincon.
 </div>

@@ -1,0 +1,10 @@
+<div id="user-mini-panel">
+    <img
+        class="user-picture float-left"
+        src="{{ url_for('static', filename='img/profile/' + user.picture) }}"
+        alt="{{ user.nombre }} profile picture">
+    <h5 style="padding-top:5px;">
+        @{{ user.nombre }}
+    </h5>
+    <p style="margin-top: -0.5rem;"><a href="{{ url_for('logout') }}">Cerrar sesion</a></p>
+</div>

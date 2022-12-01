@@ -27,8 +27,20 @@ Session(app)
 @app.get('/')
 def home():
     user = session.get('user', None)
+    
+    db_session = get_db_session()
+    jams = db_session.query(models.Jams).all()
 
-    return render_template('home.html', user=user)
+    return render_template('home.html', user=user, jams=jams, latest_jam=jams[0])
+
+@app.get('/jams')
+def jams():
+    user = session.get('user', None)
+
+    db_session = get_db_session()
+    jams = db_session.query(models.Jams).all()
+
+    return render_template('jams.html', user=user, jams=jams, latest_jam=jams[0])
 
 @app.get('/signup')
 def signup():
@@ -104,12 +116,15 @@ def admin():
         flash('Inicia sesion para continuar.')
         return redirect(url_for('login'))
     
-    return render_template('admin.html', user=user)
+    db_session = get_db_session()
+    jams = db_session.query(models.Jams).all()
+    
+    return render_template('admin.html', user=user, jams=jams)
 
 @app.post('/admin/newjam')
 def admin_new_jam():
     # ToDo: validar session de admin
-    cover = 'default.png'
+    cover = 'default.gif'
     titulo = request.form['jam-title']
     descripcion = request.form['jam-description']
    
