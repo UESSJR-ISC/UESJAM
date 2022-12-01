@@ -7,8 +7,22 @@
 {% block body %}
     <div class="container">
         <div class="row mt-3">
-            <div class="col"></div>
-            <div class="col-6">
+            <div class="col-sm"></div>
+            <div class="col-md-6">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="flashes">
+                            {% for message in messages %}
+                                <div class="alert alert-dark alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
                 <div class="mb-4 mt-5">
                     <img
                         class="umb-icon mx-auto d-block"
@@ -17,7 +31,7 @@
                 </div>
                 {% include 'login/form.html' %}
             </div>
-            <div class="col"></div>
+            <div class="col-sm"></div>
         </div>
     </div>
 {% endblock %}

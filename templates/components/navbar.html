@@ -31,8 +31,12 @@
         Dashboard
     </a>
     <hr>
-    <p>
-        Participa <a href="{{ url_for('signup') }}">creando una cuenta</a>
-        o <a href="{{ url_for('login') }}">iniciando sesion</a>.
-    </p>
+    {% if user==None %}
+        <p>
+            Participa <a href="{{ url_for('signup') }}">creando una cuenta</a>
+            o <a href="{{ url_for('login') }}">iniciando sesion</a>.
+        </p>
+    {% else %}
+        <p>{{ user.nombre }}</p>
+    {% endif %}
 </div>

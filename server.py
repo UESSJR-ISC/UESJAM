@@ -1,12 +1,17 @@
 from flask import Flask
+from flask import flash
+from flask import session
 from flask import request
 from flask import url_for
 from flask import redirect
 from flask import render_template
+from flask_session import Session
 
 from database import Database
 from database import engine
-from database import get_session
+from database import get_db_session
+
+from sqlalchemy import or_
 
 import models
 
@@ -15,9 +20,15 @@ app.config["SECRET_KEY"] = 'dmo5S4DxuD^9IWK1k33o7Xg88J&D8fq!'
 
 Database.metadata.create_all(engine)
 
+SESSION_TYPE = 'filesystem'
+app.config.from_object(__name__)
+Session(app)
+
 @app.get('/')
 def home():
-    return render_template('home.html')
+    user = session.get('user', None)
+
+    return render_template('home.html', user=user)
 
 @app.get('/signup')
 def signup():
@@ -33,16 +44,25 @@ def signup_form():
     password = request.form['user-password']
     usuario_nombre = request.form['user-name']
     confirmar_password = request.form['user-password-confirm']
+
+    # ToDo: validar formulario
    
-    
     nuevo_usuario = models.Usuarios(nombre=usuario_nombre, correo=correo, password=password, ues_id=ues_id, descripcion=descripcion, picture=picture, admin=admin)
     
-    session = get_session()
-    session.add(nuevo_usuario)
-    session.commit()
-    session.refresh(nuevo_usuario)
+    db_session = get_db_session()
+    db_session.add(nuevo_usuario)
+    db_session.commit()
+    db_session.refresh(nuevo_usuario)
     
-    return redirect(url_for('profile'))
+    flash('Ahora puedes iniciar sesion.')
+
+    return redirect(url_for('login'))
+
+@app.get('/logout')
+def logout():
+    session['user'] = None
+
+    return redirect(url_for('login'))
 
 @app.get('/login')
 def login():
@@ -50,30 +70,55 @@ def login():
 
 @app.post('/login')
 def login_form():
-    #validar sesion aqui
+    user_name = request.form['user-name']
+    user_password = request.form['user-password']
+
+    db_session = get_db_session()
+    user = db_session.query(models.Usuarios).filter(
+            or_(models.Usuarios.nombre==user_name, models.Usuarios.correo==user_name), 
+            models.Usuarios.password==user_password).first()
+    
+    if user == None:
+        flash('¡Usuario y/o contraseña incorrectos!')
+        return redirect(url_for('login'))
+
+    session['user'] = user
+
     return redirect(url_for('profile'))
 
 @app.get('/profile')
 def profile():
-    return render_template('profile.html')
+    user = session.get('user', None)
+
+    if user == None:
+        flash('Inicia sesion para continuar.')
+        return redirect(url_for('login'))
+    
+    return render_template('profile.html', user=user)
 
 @app.get('/admin')
 def admin():
-    return render_template('admin.html')
+    user = session.get('user', None)
+
+    if user == None:
+        flash('Inicia sesion para continuar.')
+        return redirect(url_for('login'))
+    
+    return render_template('admin.html', user=user)
 
 @app.post('/admin/newjam')
 def admin_new_jam():
+    # ToDo: validar session de admin
     cover = 'default.png'
     titulo = request.form['jam-title']
     descripcion = request.form['jam-description']
    
-    
     nuevo_jam = models.Jams(titulo=titulo, descripcion=descripcion, cover=cover)
     
-    session = get_session()
-    session.add(nuevo_jam)
-    session.commit()
-    session.refresh(nuevo_jam)
+    db_session = get_db_session()
+    db_session.add(nuevo_jam)
+    db_session.commit()
+    db_session.refresh(nuevo_jam)
     
     return redirect(url_for('admin'))
 

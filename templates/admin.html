@@ -7,15 +7,16 @@
 {% block body %}
     <div class="container">
         <div class="row mt-3">
-            <div class="col-3">
+            <div class="col-sm">
                 {% include 'components/navbar.html' %}
             </div>
-            <div class="col">
+            <div class="col-md-8">
                 {% include 'admin/new-jam-form.html' %}
                 <hr>
                 <h5>JAM's activas</h5>
                 <hr>
             </div>
+            <div class="col-sm-1"></div>
         </div>
     </div>
 {% endblock %}
