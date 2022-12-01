@@ -11,8 +11,24 @@
         <textarea name="jam-description" id="jam-description" rows="5" class="form-control" style="resize: none;" required></textarea>
     </div>
     <div class="form-group">
+        <div class="row">
+            <div class="col-sm">
+                <label for="jam-start-date">Fecha de inicio</label>
+                <input type="date" name="jam-start-date" id="jam-start-date" class="form-control" required>
+            </div>
+            <div class="col-sm">
+                <label for="jam-end-date">Fecha de cierre</label>
+                <input type="date" name="jam-end-date" id="jam-end-date" class="form-control" required>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="jam-tags">Etiquetas (separadas por coma)</label>
+        <input type="text" name="jam-tags" id="jam-tags" class="form-control" placeholder="plataformas, 2d, godot">
+    </div>
+    <div class="form-group">
         <label for="jam-cover-image">Imagen de portada</label>
-        <input type="file" name="jam-cover-image" id="jam-cover-image" class="form-control-file" required>
+        <input type="file" name="jam-cover-image" id="jam-cover-image" class="form-control-file">
     </div>
     <div class="form-group">
         <button class="btn btn-primary">¡Publicar!</button>

@@ -29,6 +29,8 @@ def home():
     user = session.get('user', None)
     
     db_session = get_db_session()
+
+    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
     jams = db_session.query(models.Jams).all()
 
     return render_template('home.html', user=user, jams=jams, latest_jam=jams[0])
@@ -38,6 +40,8 @@ def jams():
     user = session.get('user', None)
 
     db_session = get_db_session()
+
+    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
     jams = db_session.query(models.Jams).all()
 
     return render_template('jams.html', user=user, jams=jams, latest_jam=jams[0])
@@ -96,7 +100,7 @@ def login_form():
 
     session['user'] = user
 
-    return redirect(url_for('profile'))
+    return redirect(url_for('home'))
 
 @app.get('/profile')
 def profile():
@@ -106,7 +110,12 @@ def profile():
         flash('Inicia sesion para continuar.')
         return redirect(url_for('login'))
     
-    return render_template('profile.html', user=user)
+    db_session = get_db_session()
+
+    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
+    jams = db_session.query(models.Jams).all()
+
+    return render_template('profile.html', user=user, jams=jams, latest_jam=jams[0])
 
 @app.get('/admin')
 def admin():
@@ -117,6 +126,12 @@ def admin():
         return redirect(url_for('login'))
     
     db_session = get_db_session()
+
+    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
+
+    if user.admin != 1:
+        return redirect(url_for('home'))
+    
     jams = db_session.query(models.Jams).all()
     
     return render_template('admin.html', user=user, jams=jams)
