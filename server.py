@@ -1,3 +1,6 @@
+from PIL import Image
+from io import BytesIO
+
 from flask import Flask
 from flask import flash
 from flask import session
@@ -18,14 +21,17 @@ from datetime import datetime
 import models
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = 'dmo5S4DxuD^9IWK1k33o7Xg88J&D8fq!'
-
-Database.metadata.create_all(engine)
 
 SESSION_TYPE = 'filesystem'
+JAM_COVERS_FOLDER = 'static/img/jam_covers/'
+PROFILE_PICTURES_FOLDER = 'static/img/profile/'
+SECRET_KEY = 'dmo5S4DxuD^9IWK1k33o7Xg88J&D8fq!'
+ALLOWED_IMAGE_TYPES = ['png', 'jpg', 'jpeg', 'gif']
+ALLOWED_FILE_TYPES = ['zip', 'rar']
 
 app.config.from_object(__name__)
 
+Database.metadata.create_all(engine)
 Session(app)
 
 def get_user_from_session():
@@ -37,6 +43,14 @@ def get_user_from_session():
     
     return user
 
+def validate_file_type(filename: str, types):
+    return filename != '' and \
+        '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in types
+
+def save_jam_cover(file):
+    image_data = file.read()
+    image = Image.open(BytesIO(image_data))
 
 @app.get('/')
 def home():
@@ -172,9 +186,21 @@ def admin_new_jam():
     if not user or user.admin != 1:
         return redirect(url_for('home'))
 
-    opened = 1
+    if 'jam-cover-image' not in request.files:
+        flash('No image cover was sent')
+        return redirect(url_for('admin')), 400
+
+    image_cover_file = request.files['jam-cover-image']
+
+    if not validate_file_type(image_cover_file.filename, ALLOWED_IMAGE_TYPES):
+        flash('Invalida file type for image cover')
+        return redirect(url_for('admin')), 400
+    
+    # ToDo guardar imagen
+
+    opened = 0
     visible = 1
-    cover = 'default.gif'
+    cover = image_cover_file.filename
     titulo = request.form['jam-title']
     descripcion = request.form['jam-description']
     fecha_inicio = datetime.strptime(request.form['jam-start-date'], '%Y-%m-%d').date()
