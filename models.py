@@ -2,10 +2,12 @@ from database import Database
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Integer
+from sqlalchemy import Date
 
 
 class Usuarios(Database):
     __tablename__ = "usuarios"
+
     id = Column(Integer, primary_key = True)
     nombre = Column(String(60))
     correo = Column(String(60))
@@ -18,9 +20,13 @@ class Usuarios(Database):
     
 class Jams(Database):
     __tablename__ = "jams"
+
     id = Column(Integer, primary_key = True)
     titulo = Column(String(60))
     descripcion = Column(String(60))
     cover= Column(String(256))
-  
-
+    fecha_inicio = Column(Date)
+    fecha_final = Column(Date)
+    tags = Column(String(240))
+    opened = Column(Integer)
+    visible = Column(Integer)

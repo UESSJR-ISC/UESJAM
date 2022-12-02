@@ -23,13 +23,22 @@
                                 alt="JAM Image cover">
                             <div class="card-body">
                                 <h5 class="card-title">{{ jam.titulo }}</h5>
-                                <p class="card-text">
-                                    {{ jam.descripcion }}
-                                </p>
                             </div>
                             <div class="card-footer">
-                                <a href="#" class="btn btn-primary">
-                                    ¡Unirse!
+                                <a href="{{ url_for('jam', id=jam.id) }}" class="btn btn-secondary">
+                                    Ver
+                                </a>
+                                {% if jam.opened==1 %}
+                                    <a href="{{ url_for('jam_close', id=jam.id) }}" class="btn btn-warning">
+                                        Cerrar
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('jam_open', id=jam.id) }}" class="btn btn-warning">
+                                        Abrir
+                                    </a>
+                                {% endif %}
+                                <a href="#" class="btn btn-danger">
+                                    Eliminar
                                 </a>
                             </div>
                         </div>

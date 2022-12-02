@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block headers %}
+    <title>UES GameJAM</title>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col-sm">
+                {% include 'components/navbar.html' %}
+            </div>
+            <div class="col-md-8">
+                <h5>¡Participa en esta JAM!</h5>
+                <div class="card text-white bg-dark">
+                    <img
+                        src="{{ url_for('static', filename='img/jam_covers/' + jam.cover) }}"
+                        class="card-img-top"
+                        alt="JAM Image cover">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ jam.titulo }}
+                            {% if jam.opened == 1 %}
+                                <span class="badge badge-success">Abierta</span>
+                            {% else %}
+                                <span class="badge badge-danger">Cerrada</span>
+                            {% endif %}
+                        </h5>
+                        <p class="card-text">
+                            Del <strong>{{ jam.fecha_inicio }}</strong> al <strong>{{ jam.fecha_final }}</strong>.
+                        </p>
+                        <p class="card-text">
+                            {{ jam.descripcion }}
+                        </p>
+                        <p class="card-text">
+                            {% for tag in jam.tags.split(',') %}
+                                <span class="badge badge-info">{{ tag }}</span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        {% if jam.opened == 1 %}
+                            <a href="#" class="btn btn-primary">¡Unirse!</a>
+                        {% else %}
+                            <i>¡Esta JAM ya finalizo! puedes esperar a que una nueva JAM este disponible para participar.</i>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-1"></div>
+        </div>
+    </div>
+{% endblock %}

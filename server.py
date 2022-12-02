@@ -13,6 +13,8 @@ from database import get_db_session
 
 from sqlalchemy import or_
 
+from datetime import datetime
+
 import models
 
 app = Flask(__name__)
@@ -21,33 +23,57 @@ app.config["SECRET_KEY"] = 'dmo5S4DxuD^9IWK1k33o7Xg88J&D8fq!'
 Database.metadata.create_all(engine)
 
 SESSION_TYPE = 'filesystem'
+
 app.config.from_object(__name__)
+
 Session(app)
+
+def get_user_from_session():
+    user = session.get('user', None)
+
+    if user != None:
+        db_session = get_db_session()
+        user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
+    
+    return user
+
 
 @app.get('/')
 def home():
-    user = session.get('user', None)
-    
     db_session = get_db_session()
+    jams = db_session.query(models.Jams).filter(models.Jams.visible==1).all()
+    latest_jam = db_session.query(models.Jams).filter(models.Jams.visible==1).first()
 
-    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
-    jams = db_session.query(models.Jams).all()
+    user = get_user_from_session()
 
-    return render_template('home.html', user=user, jams=jams, latest_jam=jams[0])
+    return render_template('home.html', user=user, jams=jams, latest_jam=latest_jam)
 
 @app.get('/jams')
 def jams():
-    user = session.get('user', None)
-
     db_session = get_db_session()
+    jams = db_session.query(models.Jams).filter(models.Jams.visible==1).all()
+    latest_jam = db_session.query(models.Jams).filter(models.Jams.visible==1).first()
 
-    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
-    jams = db_session.query(models.Jams).all()
+    user = get_user_from_session()
 
-    return render_template('jams.html', user=user, jams=jams, latest_jam=jams[0])
+    return render_template('jams.html', user=user, jams=jams, latest_jam=latest_jam)
+
+@app.get('/jam/<id>')
+def jam(id):
+    db_session = get_db_session()
+    jam = db_session.query(models.Jams).filter(models.Jams.id==id).first()
+
+    user = get_user_from_session()
+
+    return render_template('jam.html', user=user, jam=jam)
 
 @app.get('/signup')
 def signup():
+    user = get_user_from_session()
+
+    if user != None:
+        return redirect(url_for('home'))
+
     return render_template('signup.html')
 
 @app.post('/signup')
@@ -63,7 +89,14 @@ def signup_form():
 
     # ToDo: validar formulario
    
-    nuevo_usuario = models.Usuarios(nombre=usuario_nombre, correo=correo, password=password, ues_id=ues_id, descripcion=descripcion, picture=picture, admin=admin)
+    nuevo_usuario = models.Usuarios(
+        nombre=usuario_nombre, 
+        correo=correo, 
+        password=password, 
+        ues_id=ues_id, 
+        descripcion=descripcion, 
+        picture=picture, 
+        admin=admin)
     
     db_session = get_db_session()
     db_session.add(nuevo_usuario)
@@ -104,46 +137,59 @@ def login_form():
 
 @app.get('/profile')
 def profile():
-    user = session.get('user', None)
+    user = get_user_from_session()
 
     if user == None:
         flash('Inicia sesion para continuar.')
         return redirect(url_for('login'))
     
     db_session = get_db_session()
-
-    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
     jams = db_session.query(models.Jams).all()
+    latest_jam = db_session.query(models.Jams).first()
 
-    return render_template('profile.html', user=user, jams=jams, latest_jam=jams[0])
+    return render_template('profile.html', user=user, jams=jams, latest_jam=latest_jam)
 
 @app.get('/admin')
 def admin():
-    user = session.get('user', None)
+    user = get_user_from_session()
 
     if user == None:
         flash('Inicia sesion para continuar.')
         return redirect(url_for('login'))
-    
-    db_session = get_db_session()
 
-    user = db_session.query(models.Usuarios).filter(models.Usuarios.id==user.id).first()
-
-    if user.admin != 1:
+    elif user.admin != 1:
         return redirect(url_for('home'))
     
+    db_session = get_db_session()
     jams = db_session.query(models.Jams).all()
     
     return render_template('admin.html', user=user, jams=jams)
 
 @app.post('/admin/newjam')
 def admin_new_jam():
-    # ToDo: validar session de admin
+    user = get_user_from_session()
+
+    if not user or user.admin != 1:
+        return redirect(url_for('home'))
+
+    opened = 1
+    visible = 1
     cover = 'default.gif'
     titulo = request.form['jam-title']
     descripcion = request.form['jam-description']
+    fecha_inicio = datetime.strptime(request.form['jam-start-date'], '%Y-%m-%d').date()
+    fecha_final = datetime.strptime(request.form['jam-end-date'], '%Y-%m-%d').date()
+    tags = request.form['jam-tags']
    
-    nuevo_jam = models.Jams(titulo=titulo, descripcion=descripcion, cover=cover)
+    nuevo_jam = models.Jams(
+        titulo=titulo, 
+        descripcion=descripcion, 
+        cover=cover,
+        fecha_inicio=fecha_inicio,
+        fecha_final=fecha_final,
+        tags=tags,
+        opened=opened,
+        visible=visible)
     
     db_session = get_db_session()
     db_session.add(nuevo_jam)
@@ -151,6 +197,40 @@ def admin_new_jam():
     db_session.refresh(nuevo_jam)
     
     return redirect(url_for('admin'))
+
+@app.get('/jam/<id>/close')
+def jam_close(id):
+    user = get_user_from_session()
+
+    if not user or user.admin != 1:
+        return redirect(url_for('home'))
+    
+    db_session = get_db_session()
+    jam = db_session.query(models.Jams).filter(models.Jams.id==id).first()
+
+    jam.opened = 0
+
+    db_session.add(jam)
+    db_session.commit()
+
+    return redirect(url_for('jam', id=jam.id))
+
+@app.get('/jam/<id>/open')
+def jam_open(id):
+    user = get_user_from_session()
+
+    if not user or user.admin != 1:
+        return redirect(url_for('home'))
+    
+    db_session = get_db_session()
+    jam = db_session.query(models.Jams).filter(models.Jams.id==id).first()
+
+    jam.opened = 1
+
+    db_session.add(jam)
+    db_session.commit()
+
+    return redirect(url_for('jam', id=jam.id))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 80, debug=True)

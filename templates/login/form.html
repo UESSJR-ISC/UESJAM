@@ -9,8 +9,9 @@
         <label for="user-password">Contraseña</label>
         <input type="password" name="user-password" id="user-password" class="form-control" required>
     </div>
-    <hr>
     <div class="form-group">
         <button class="btn btn-primary">Iniciar sesion</button>
     </div>
+    <hr>
+    <p>¿No tienes una cuenta? <a href="{{ url_for('signup') }}">crea una aqui.</a></p>
 </form>
