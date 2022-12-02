@@ -27,6 +27,13 @@
                             {% endif %}
                         </h5>
                         <p class="card-text">
+                            <div
+                                class="countdown"
+                                data-start="{{ jam.fecha_inicio }}"
+                                data-end="{{ jam.fecha_final }}">
+                            </div>
+                        </p>
+                        <p class="card-text">
                             Del <strong>{{ jam.fecha_inicio }}</strong> al <strong>{{ jam.fecha_final }}</strong>.
                         </p>
                         <p class="card-text">
@@ -50,4 +57,8 @@
             <div class="col-sm-1"></div>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/countdown.js') }}"></script>
 {% endblock %}
