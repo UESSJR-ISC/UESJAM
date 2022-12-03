@@ -18,6 +18,8 @@ from sqlalchemy import or_
 
 from datetime import datetime
 
+import uuid
+
 import models
 
 app = Flask(__name__)
@@ -51,6 +53,18 @@ def validate_file_type(filename: str, types):
 def save_jam_cover(file):
     image_data = file.read()
     image = Image.open(BytesIO(image_data))
+
+    file_name = "%s.png" % str(uuid.uuid4())
+    file_path = JAM_COVERS_FOLDER + file_name
+
+    image.save(file_path, format="png")
+
+    return file_name
+
+@app.teardown_request
+def remove_session(ex=None):
+    db_session = get_db_session()
+    db_session.remove()
 
 @app.get('/')
 def home():
@@ -187,20 +201,20 @@ def admin_new_jam():
         return redirect(url_for('home'))
 
     if 'jam-cover-image' not in request.files:
+        print("error 1")
         flash('No image cover was sent')
-        return redirect(url_for('admin')), 400
+        return redirect(url_for('admin'))
 
     image_cover_file = request.files['jam-cover-image']
 
     if not validate_file_type(image_cover_file.filename, ALLOWED_IMAGE_TYPES):
+        print("error 2")
         flash('Invalida file type for image cover')
-        return redirect(url_for('admin')), 400
-    
-    # ToDo guardar imagen
+        return redirect(url_for('admin'))
 
     opened = 0
     visible = 1
-    cover = image_cover_file.filename
+    cover = save_jam_cover(image_cover_file)
     titulo = request.form['jam-title']
     descripcion = request.form['jam-description']
     fecha_inicio = datetime.strptime(request.form['jam-start-date'], '%Y-%m-%d').date()
