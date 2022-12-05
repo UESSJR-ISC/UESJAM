@@ -47,12 +47,68 @@
                     </div>
                     <div class="card-footer">
                         {% if jam.opened == 1 %}
-                            <a href="#" class="btn btn-primary">¡Unirse!</a>
+                            {% if user != None %}
+                                {% include 'jam/post-game-form.html' %}
+                            {% else %}
+                                Participa <a href="{{ url_for('signup') }}">creando una cuenta</a>
+                                o <a href="{{ url_for('login') }}">iniciando sesion</a>. 
+                                Podras publicar un juego o votar por el que mas te guste.
+                            {% endif %}
                         {% else %}
                             <i>¡Esta JAM ya finalizo! puedes esperar a que una nueva JAM este disponible para participar.</i>
                         {% endif %}
                     </div>
                 </div>
+                <hr>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="flashes">
+                            {% for message in messages %}
+                                <div class="alert alert-dark alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                <h5>Juegos participantes</h5>
+                {% for juego in jam.juegos %}
+                    <div class="card text-white bg-dark mb-3">
+                        <div class="row no-gutters">
+                            <div class="col-md-4">
+                                <img 
+                                    src="{{ url_for('static', filename=juego.path + juego.cover) }}" 
+                                    alt="{{ juego.nombre }} image cover."
+                                    class="img-fluid rounded-start">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ juego.nombre }} - <span class="text-primary">{{ juego.votos|length }} votos</span></h5>
+                                    <p class="card-text">
+                                        {{ juego.descripcion_corta }}...
+                                        <a href="#"> ver más.</a>
+                                    </p>
+                                    <p class="card-text">
+                                        <small>Publicado por: <a href="#">{{ juego.usuario.nombre }}</a></small>
+                                    </p>
+                                    <p class="card-text">
+                                        <a href="{{ url_for('static', filename=juego.path + juego.files) }}" class="btn btn-primary" target="_blank">
+                                            <i class="bi bi-cloud-arrow-down"></i>
+                                            Descargar
+                                        </a>
+                                        <a href="{{ url_for('vote', jam_id=jam.id, game_id=juego.id) }}" class="btn btn-danger">
+                                            <i class="bi bi-suit-heart-fill"></i>
+                                            Votar
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
             <div class="col-sm-1"></div>
         </div>

@@ -26,11 +26,7 @@
         Equipos
     </a><br>
     {% if user %}
-        <a class="btn btn-secondary mt-3" href="{{ url_for('profile') }}">
-            <i class="bi bi-person"></i>
-            Perfil
-        </a><br>
-        <a class="btn btn-primary mt-3" href="#">
+        <a class="btn btn-primary mt-3" href="{{ url_for('profile') }}">
             Dashboard
         </a>
     {% endif %}

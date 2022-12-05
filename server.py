@@ -1,5 +1,9 @@
+import os
+
 from PIL import Image
 from io import BytesIO
+
+from werkzeug.utils import secure_filename
 
 from flask import Flask
 from flask import flash
@@ -15,6 +19,8 @@ from database import engine
 from database import get_db_session
 
 from sqlalchemy import or_
+from sqlalchemy import func
+from sqlalchemy import desc
 
 from datetime import datetime
 
@@ -27,9 +33,10 @@ app = Flask(__name__)
 SESSION_TYPE = 'filesystem'
 JAM_COVERS_FOLDER = 'static/img/jam_covers/'
 PROFILE_PICTURES_FOLDER = 'static/img/profile/'
+GAMES_FILES_PATH = 'game/'
 SECRET_KEY = 'dmo5S4DxuD^9IWK1k33o7Xg88J&D8fq!'
 ALLOWED_IMAGE_TYPES = ['png', 'jpg', 'jpeg', 'gif']
-ALLOWED_FILE_TYPES = ['zip', 'rar']
+ALLOWED_FILE_TYPES = ['zip', 'rar', 'exe']
 
 app.config.from_object(__name__)
 
@@ -61,6 +68,34 @@ def save_jam_cover(file):
 
     return file_name
 
+def make_game_path():
+    game_path = GAMES_FILES_PATH + str(uuid.uuid4()) + "/"
+
+    os.mkdir('static/' + game_path)
+
+    return game_path
+    
+
+def save_game_file(file, game_path, game_title):
+    file_ext = file.filename.rsplit('.', 1)[1].lower()
+    file_name = "%s.%s" % (secure_filename(game_title), file_ext)
+    file_path = game_path + file_name
+
+    file.save('static/' + file_path)
+
+    return file_name
+
+def save_game_image(file, game_path):
+    image_data = file.read()
+    image = Image.open(BytesIO(image_data))
+
+    file_name = "%s.png" % str(uuid.uuid4())
+    file_path = game_path + file_name
+
+    image.save('static/' + file_path, format="png")
+
+    return file_name
+
 @app.teardown_request
 def remove_session(ex=None):
     db_session = get_db_session()
@@ -82,18 +117,31 @@ def jams():
     jams = db_session.query(models.Jams).filter(models.Jams.visible==1).all()
     latest_jam = db_session.query(models.Jams).filter(models.Jams.visible==1).first()
 
+    if jams == None:
+        return redirect(url_for('home'))
+
     user = get_user_from_session()
 
     return render_template('jams.html', user=user, jams=jams, latest_jam=latest_jam)
 
 @app.get('/jam/<id>')
 def jam(id):
-    db_session = get_db_session()
-    jam = db_session.query(models.Jams).filter(models.Jams.id==id).first()
-
     user = get_user_from_session()
+    
+    db_session = get_db_session()
 
-    return render_template('jam.html', user=user, jam=jam)
+    jam = db_session.query(models.Jams)\
+        .filter(models.Jams.id==id)\
+        .first()
+    
+    if user != None:
+        own_game = db_session.query(models.Juegos)\
+            .filter(models.Juegos.usuario_id==user.id, models.Juegos.jam_id==id)\
+            .first()
+    else:
+        own_game = None
+
+    return render_template('jam.html', user=user, jam=jam, own_game=own_game)
 
 @app.get('/signup')
 def signup():
@@ -271,6 +319,97 @@ def jam_toggle_visibility(id):
     db_session.commit()
 
     return redirect(url_for('admin'))
+
+@app.post('/game')
+def game_post():
+    user = get_user_from_session()
+
+    jam_id = request.form['game-jam-id']
+
+    db_session = get_db_session()
+    game = db_session.query(models.Juegos)\
+        .filter(models.Juegos.usuario_id==user.id, models.Juegos.jam_id==jam_id)\
+        .first()
+
+    if game != None:
+        flash('Ya has publicado un juego para esta Jam')
+        return redirect(url_for('jam', id=jam_id))
+
+    if not user:
+        flash('Inicia sesion para continuar.')
+        return redirect(url_for('login'))
+    
+    if 'game-cover' not in request.files:
+        print("error 1")
+        flash('No image cover was sent')
+        return redirect(url_for('jam', id=jam_id))
+
+    image_cover_file = request.files['game-cover']
+
+    if not validate_file_type(image_cover_file.filename, ALLOWED_IMAGE_TYPES):
+        print("error 2")
+        flash('Invalid file type for image cover')
+        return redirect(url_for('jam', id=jam_id))
+    
+    if 'game-files' not in request.files:
+        print("error 1")
+        flash('No game files was sent')
+        return redirect(url_for('jam', id=jam_id))
+
+    game_files = request.files['game-files']
+
+    if not validate_file_type(game_files.filename, ALLOWED_FILE_TYPES):
+        print("error 2")
+        flash('Invalid file type for game files')
+        return redirect(url_for('jam', id=jam_id))
+    
+    game_title = request.form['game-title']
+    short_description = request.form['game-short-description']
+    large_description = request.form['game-large-description']
+    path = make_game_path()
+    cover = save_game_image(image_cover_file, path)
+    files = save_game_file(game_files, path, game_title)
+    usuario_id = user.id
+
+    game = models.Juegos(
+        nombre=game_title,
+        descripcion_corta=short_description,
+        descripcion_larga=large_description,
+        cover=cover,
+        files=files,
+        path=path,
+        jam_id=jam_id,
+        usuario_id=usuario_id
+    )
+
+    db_session.add(game)
+    db_session.commit()
+    db_session.refresh(game)
+
+    return redirect(url_for('jam', id=jam_id))
+
+@app.get('/vote/<jam_id>/<game_id>')
+def vote(jam_id, game_id):
+    user = get_user_from_session()
+
+    if not user:
+        flash('Inicia sesion para continuar.')
+        return redirect(url_for('login'))
+    
+    db_session = get_db_session()
+    vote = db_session.query(models.Votos).filter(models.Votos.usuario_id==user.id, models.Votos.jam_id==jam_id).first()
+
+    if vote != None:
+        flash('Ya has votado para esta Jam')
+        return redirect(url_for('jam', id=jam_id))
+    
+    new_vote = models.Votos(usuario_id=user.id, juego_id=game_id, jam_id=jam_id)
+
+    db_session.add(new_vote)
+    db_session.commit()
+    db_session.refresh(new_vote)
+
+    return redirect(url_for('jam', id=jam_id))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 80, debug=True)

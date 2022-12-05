@@ -15,6 +15,10 @@ a:hover {
     color: #20bd7c;
 }
 
+.text-primary {
+    color: #20bd7c!important;
+}
+
 .btn {
     border-radius: 30px;
 }

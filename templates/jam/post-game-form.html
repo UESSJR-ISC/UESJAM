@@ -1,0 +1,50 @@
+{% if own_game == None %}
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#game-post-modal">
+        ¡Unirse!
+    </button>
+{% else %}
+    <p>Ya estas participando con tu juego <a href="#">{{ own_game.nombre }}</a> el cual tiene <span class="text-primary">{{ own_game.votos|length  }} votos </span>.</p>
+{% endif %}
+<div class="modal fade text-dark" id="game-post-modal" tabindex="-1" aria-labelledby="game-post-modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="game-post-modal-label">Publica un juego para esta JAM</h5>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+            <h5>{{ jam.titulo }}</h5>
+          <form action="{{ url_for('game_post') }}" method="post" enctype="multipart/form-data">
+            <input type="text" name="game-jam-id" id="game-jam-id" value="{{ jam.id }}" hidden>
+            <div class="form-group">
+                <label for="game-title">Titulo del juego</label>
+                <input type="text" name="game-title" id="game-title" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="game-short-description">Descripcion corta</label>
+                <input type="text" name="game-short-description" id="game-short-description" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="game-large-description">Descripcion larga</label>
+                <textarea name="game-large-description" id="game-large-description" rows="5" class="form-control" style="resize: none;" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="game-cover">Imagen de portada</label>
+                <input type="file" name="game-cover" id="game-cover" class="form-control-file" required>
+            </div>
+            <div class="form-group">
+                <label for="game-files">Archivos del juego (zip o rar)</label>
+                <input type="file" name="game-files" id="game-files" class="form-control-file" required>
+            </div>
+            <hr>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Publicar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
