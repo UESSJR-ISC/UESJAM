@@ -238,8 +238,8 @@ def admin_new_jam():
     
     return redirect(url_for('admin'))
 
-@app.get('/jam/<id>/close')
-def jam_close(id):
+@app.get('/jam/<id>/toggle-open')
+def jam_toggle_open(id):
     user = get_user_from_session()
 
     if not user or user.admin != 1:
@@ -248,15 +248,15 @@ def jam_close(id):
     db_session = get_db_session()
     jam = db_session.query(models.Jams).filter(models.Jams.id==id).first()
 
-    jam.opened = 0
+    jam.opened = 0 if jam.opened == 1 else 1
 
     db_session.add(jam)
     db_session.commit()
 
     return redirect(url_for('jam', id=jam.id))
 
-@app.get('/jam/<id>/open')
-def jam_open(id):
+@app.get('/jam/<id>/toggle-visibility')
+def jam_toggle_visibility(id):
     user = get_user_from_session()
 
     if not user or user.admin != 1:
@@ -265,12 +265,12 @@ def jam_open(id):
     db_session = get_db_session()
     jam = db_session.query(models.Jams).filter(models.Jams.id==id).first()
 
-    jam.opened = 1
+    jam.visible = 0 if jam.visible == 1 else 1
 
     db_session.add(jam)
     db_session.commit()
 
-    return redirect(url_for('jam', id=jam.id))
+    return redirect(url_for('admin'))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', 80, debug=True)

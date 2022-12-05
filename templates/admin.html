@@ -29,17 +29,23 @@
                                     Ver
                                 </a>
                                 {% if jam.opened==1 %}
-                                    <a href="{{ url_for('jam_close', id=jam.id) }}" class="btn btn-warning">
+                                    <a href="{{ url_for('jam_toggle_open', id=jam.id) }}" class="btn btn-warning">
                                         Cerrar
                                     </a>
                                 {% else %}
-                                    <a href="{{ url_for('jam_open', id=jam.id) }}" class="btn btn-warning">
+                                    <a href="{{ url_for('jam_toggle_open', id=jam.id) }}" class="btn btn-warning">
                                         Abrir
                                     </a>
                                 {% endif %}
-                                <a href="#" class="btn btn-danger">
-                                    Eliminar
-                                </a>
+                                {% if jam.visible == 1 %}
+                                    <a href="{{ url_for('jam_toggle_visibility', id=jam.id) }}" class="btn btn-danger">
+                                        Ocultar
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('jam_toggle_visibility', id=jam.id) }}" class="btn btn-danger">
+                                        Mostrar
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}
