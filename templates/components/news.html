@@ -8,9 +8,6 @@
                 alt="JAM Image cover">
             <div class="card-body">
                 <h5 class="card-title">{{ latest_jam.titulo }}</h5>
-                <p class="card-text">
-                    {{ latest_jam.descripcion }}
-                </p>
             </div>
             <div class="card-footer">
                 <a href="{{ url_for('jam', id=latest_jam.id) }}" class="btn btn-primary">

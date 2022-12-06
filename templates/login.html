@@ -24,10 +24,12 @@
                     {% endif %}
                 {% endwith %}
                 <div class="mb-4 mt-5">
-                    <img
-                        class="umb-icon mx-auto d-block"
-                        src="{{ url_for('static', filename='img/umb-white.png') }}"
-                        alt="UMB JAM Logo">
+                    <a href="{{ url_for('home') }}">
+                        <img
+                            class="umb-icon mx-auto d-block"
+                            src="{{ url_for('static', filename='img/umb-white.png') }}"
+                            alt="UMB JAM Logo">
+                    </a>
                 </div>
                 {% include 'login/form.html' %}
             </div>

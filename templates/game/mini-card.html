@@ -1,0 +1,41 @@
+{% include 'game/mini-card-modal.html' %}
+
+<div class="card text-white bg-dark mb-3" id="game-{{ juego.id }}-mini-card">
+    <div class="row no-gutters">
+        <div class="col-md-4">
+            <img 
+                src="{{ url_for('static', filename=juego.path + juego.cover) }}" 
+                alt="{{ juego.nombre }} image cover."
+                class="img-fluid rounded-start">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ juego.nombre }} - <span class="text-primary">{{ juego.votos|length }} votos</span></h5>
+                <p class="card-text">
+                    {{ juego.descripcion_corta }}...
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#game-{{ juego.id }}-mini-card-modal">ver más</a>
+                </p>
+                <p class="card-text">
+                    <small>
+                        Publicado por:
+                        <img
+                            class="user-micro-picture"
+                            src="{{ url_for('static', filename='img/profile/' + juego.usuario.picture) }}"
+                            alt="{{ juego.usuario.nombre }} profile picture">
+                        <a href="#">{{ juego.usuario.nombre }}</a>
+                    </small>
+                </p>
+                <p class="card-text">
+                    <a href="{{ url_for('static', filename=juego.path + juego.files) }}" class="btn btn-primary" target="_blank">
+                        <i class="bi bi-cloud-arrow-down"></i>
+                        Descargar
+                    </a>
+                    <a href="{{ url_for('vote', jam_id=jam.id, game_id=juego.id) }}" class="btn btn-danger">
+                        <i class="bi bi-suit-heart-fill"></i>
+                        Votar
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

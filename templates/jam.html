@@ -37,7 +37,8 @@
                             Del <strong>{{ jam.fecha_inicio }}</strong> al <strong>{{ jam.fecha_final }}</strong>.
                         </p>
                         <p class="card-text">
-                            {{ jam.descripcion }}
+                            <pre class="jam-description-source" id="jam-description-source">{{ jam.descripcion }}</pre>
+                            <div id="jam-description"></div>
                         </p>
                         <p class="card-text">
                             {% for tag in jam.tags.split(',') %}
@@ -62,7 +63,7 @@
                 <hr>
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
-                        <div class="flashes">
+                        <div class="flashes" id="flashes">
                             {% for message in messages %}
                                 <div class="alert alert-dark alert-dismissible fade show" role="alert">
                                     {{ message }}
@@ -74,40 +75,28 @@
                         </div>
                     {% endif %}
                 {% endwith %}
-                <h5>Juegos participantes</h5>
-                {% for juego in jam.juegos %}
-                    <div class="card text-white bg-dark mb-3">
-                        <div class="row no-gutters">
-                            <div class="col-md-4">
-                                <img 
-                                    src="{{ url_for('static', filename=juego.path + juego.cover) }}" 
-                                    alt="{{ juego.nombre }} image cover."
-                                    class="img-fluid rounded-start">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ juego.nombre }} - <span class="text-primary">{{ juego.votos|length }} votos</span></h5>
-                                    <p class="card-text">
-                                        {{ juego.descripcion_corta }}...
-                                        <a href="#"> ver más.</a>
-                                    </p>
-                                    <p class="card-text">
-                                        <small>Publicado por: <a href="#">{{ juego.usuario.nombre }}</a></small>
-                                    </p>
-                                    <p class="card-text">
-                                        <a href="{{ url_for('static', filename=juego.path + juego.files) }}" class="btn btn-primary" target="_blank">
-                                            <i class="bi bi-cloud-arrow-down"></i>
-                                            Descargar
-                                        </a>
-                                        <a href="{{ url_for('vote', jam_id=jam.id, game_id=juego.id) }}" class="btn btn-danger">
-                                            <i class="bi bi-suit-heart-fill"></i>
-                                            Votar
-                                        </a>
-                                    </p>
+                <h5><i class="bi bi-controller"></i> Juegos participantes</h5>
+                {% if jam.juegos|length == 0 %}
+                        <div class="card text-dark mt-5 mb-3">
+                            <div class="row no-gutters">
+                                <div class="col-md-4">
+                                    <img src="{{ url_for('static', filename='img/duck.gif') }}" alt="Dancing duck" class="img-fluid rounded-start">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">¡Oh! parece que no hay juegos aún ¿Y si subes uno?</h5>
+                                        <p class="card-text mt-3">
+                                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#game-post-modal">
+                                                ¡Unirse a esta Jam!
+                                            </button>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                {% endif %}
+                {% for juego in jam.juegos %}
+                    {% include 'game/mini-card.html' %}
                 {% endfor %}
             </div>
             <div class="col-sm-1"></div>
@@ -117,4 +106,13 @@
 
 {% block scripts %}
     <script src="{{ url_for('static', filename='js/countdown.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/showdown.min.js') }}"></script>
+    <script>
+        var converter = new showdown.Converter();
+
+        source = document.getElementById("jam-description-source").innerText;
+        html = converter.makeHtml(source);
+
+        document.getElementById('jam-description').innerHTML = html;
+    </script>
 {% endblock %}

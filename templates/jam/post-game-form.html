@@ -1,9 +1,9 @@
 {% if own_game == None %}
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#game-post-modal">
-        ¡Unirse!
+        ¡Unirse a esta Jam!
     </button>
 {% else %}
-    <p>Ya estas participando con tu juego <a href="#">{{ own_game.nombre }}</a> el cual tiene <span class="text-primary">{{ own_game.votos|length  }} votos </span>.</p>
+    <p>Ya estas participando con tu juego <a href="#game-{{ own_game.id }}-mini-card">{{ own_game.nombre }}</a> el cual tiene <span class="text-primary">{{ own_game.votos|length  }} votos</span>.</p>
 {% endif %}
 <div class="modal fade text-dark" id="game-post-modal" tabindex="-1" aria-labelledby="game-post-modal" aria-hidden="true">
     <div class="modal-dialog">
@@ -15,7 +15,7 @@
           </button>
         </div>
         <div class="modal-body">
-            <h5>{{ jam.titulo }}</h5>
+          <h5>{{ jam.titulo }}</h5>
           <form action="{{ url_for('game_post') }}" method="post" enctype="multipart/form-data">
             <input type="text" name="game-jam-id" id="game-jam-id" value="{{ jam.id }}" hidden>
             <div class="form-group">
@@ -44,6 +44,14 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             </div>
           </form>
+        </div>
+        <div class="row no-gutters">
+          <div class="col-sm-6">
+            
+          </div>
+          <div class="col-sm-6">
+            <img src="{{ url_for('static', filename='img/k.gif') }}" alt="k9999 gif" class="img-fluid" style="position: absolute; top: -288px; right: -30px;">
+          </div>
         </div>
       </div>
     </div>

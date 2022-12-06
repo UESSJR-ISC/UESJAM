@@ -1,4 +1,4 @@
-<form action="{{ url_for('signup_form') }}" method="POST">
+<form action="{{ url_for('signup_form') }}" method="POST" enctype="multipart/form-data">
     <h5>Crea una cuenta</h5>
     <p>
         Registra una cuenta individual o de un equipo para 
@@ -11,7 +11,7 @@
     </div>
     <div class="form-group">
         <label for="user-email">Correo de contacto</label>
-        <input type="text" name="user-email" id="user-email" class="form-control" required>
+        <input type="email" name="user-email" id="user-email" class="form-control" required>
     </div>
     <div class="form-group">
         <label for="user-password">Contraseña</label>
@@ -22,6 +22,10 @@
         <input type="password" name="user-password-confirm" id="user-password-confirm" class="form-control" required>
     </div>
     <div class="form-group">
+        <label for="user-profile-picture">Foto de perfil</label>
+        <input type="file" name="user-profile-picture" id="user-profile-picture" class="form-control-file">
+    </div>
+    <div class="form-group">
         <label for="ues-id">Unidad de Estudios Superiores</label>
         <select name="ues-id" id="ues-id" class="form-control">
             <option value="0">San Jose del Rincon</option>
@@ -29,8 +33,9 @@
             <option value="2">Temascalsingo</option>
         </select>
     </div>
-    <hr>
     <div class="form-group">
         <button class="btn btn-primary">Crear cuenta</button>
     </div>
+    <hr>
+    <p>¿Ya tienes una cuenta? entonces <a href="{{ url_for('login') }}">inicia sesion.</a></p>
 </form>

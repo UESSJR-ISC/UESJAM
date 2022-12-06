@@ -1,0 +1,32 @@
+<div class="modal fade text-dark" id="game-{{ juego.id }}-mini-card-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>{{ juego.nombre }}</h5>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <img 
+                        src="{{ url_for('static', filename=juego.path + juego.cover) }}" 
+                        alt="{{ juego.nombre }} image cover."
+                        class="img-fluid rounded-start">
+                </p>
+                <p class="card-text">{{ juego.descripcion_larga }}</p>
+            </div>
+            <div class="modal-footer">
+                <a href="{{ url_for('static', filename=juego.path + juego.files) }}" class="btn btn-primary" target="_blank">
+                    <i class="bi bi-cloud-arrow-down"></i>
+                    Descargar
+                </a>
+                <a href="{{ url_for('vote', jam_id=jam.id, game_id=juego.id) }}" class="btn btn-danger">
+                    <i class="bi bi-suit-heart-fill"></i>
+                    Votar
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

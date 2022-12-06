@@ -1,6 +1,9 @@
 html, body {
     color: #fff;
     background-color: #1c1c1c;
+    background-image: url('/static/img/wallpaper.jpg');
+    background-size: cover;
+    background-attachment: fixed;
 }
 
 hr {
@@ -13,6 +16,16 @@ a {
 
 a:hover {
     color: #20bd7c;
+}
+
+.jam-description-source {
+    overflow: hidden;
+    word-break: break-word;
+    width: 100%;
+    white-space: pre-wrap;
+    color: #fff;
+    font-size: 1.1rem;
+    display: none;
 }
 
 .text-primary {
@@ -57,6 +70,12 @@ a:hover {
     width: 55px;
     border-radius: 100%;
     margin-right: 10px;
+}
+
+.user-micro-picture 
+{
+    width: 15px;
+    border-radius: 100%;
 }
 
 #navbar .btn {

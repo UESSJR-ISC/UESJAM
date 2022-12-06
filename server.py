@@ -19,8 +19,6 @@ from database import engine
 from database import get_db_session
 
 from sqlalchemy import or_
-from sqlalchemy import func
-from sqlalchemy import desc
 
 from datetime import datetime
 
@@ -56,6 +54,25 @@ def validate_file_type(filename: str, types):
     return filename != '' and \
         '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in types
+
+def save_profile_picture(file):
+    image_data = file.read()
+    image = Image.open(BytesIO(image_data))
+
+    width, height = image.size
+
+    crop_reference = width if width < height else height
+    crop_area = (0, 0, crop_reference, crop_reference)
+
+    image = image.crop(crop_area)
+    image = image.resize((200, 200), Image.ANTIALIAS)
+
+    file_name = "%s.png" % str(uuid.uuid4())
+    file_path = PROFILE_PICTURES_FOLDER + file_name
+
+    image.save(file_path, format="png")
+
+    return file_name
 
 def save_jam_cover(file):
     image_data = file.read()
@@ -154,15 +171,38 @@ def signup():
 
 @app.post('/signup')
 def signup_form():
+    correo = request.form['user-email']
+    usuario_nombre = request.form['user-name']
+
+    db_session = get_db_session()
+
+    user = db_session.query(models.Usuarios).filter(or_(models.Usuarios.nombre==usuario_nombre, models.Usuarios.correo==correo)).first()
+
+    if user != None:
+        flash("¡El usuario y/o el correo no están disponibles!")
+        return redirect(url_for('signup'))
+
+    if 'user-profile-picture' not in request.files:
+        flash('Profile image was sent')
+        return redirect(url_for('signup'))
+
+    picture_file = request.files['user-profile-picture']
+
+    if not validate_file_type(picture_file.filename, ALLOWED_IMAGE_TYPES):
+        flash('Invalid file type for profile image')
+        return redirect(url_for('signup'))
+    
     admin = 0
     descripcion = ''
-    picture = 'default.png'
+    picture = save_profile_picture(picture_file)
     ues_id = request.form['ues-id']
-    correo = request.form['user-email']
     password = request.form['user-password']
-    usuario_nombre = request.form['user-name']
     confirmar_password = request.form['user-password-confirm']
 
+    if password != confirmar_password:
+        flash('Las contraseñas no coinciden.')
+        return redirect(url_for('signup'))
+    
     # ToDo: validar formulario
    
     nuevo_usuario = models.Usuarios(
@@ -174,7 +214,6 @@ def signup_form():
         picture=picture, 
         admin=admin)
     
-    db_session = get_db_session()
     db_session.add(nuevo_usuario)
     db_session.commit()
     db_session.refresh(nuevo_usuario)
@@ -401,7 +440,7 @@ def vote(jam_id, game_id):
 
     if vote != None:
         flash('Ya has votado para esta Jam')
-        return redirect(url_for('jam', id=jam_id))
+        return redirect(url_for('jam', id=jam_id, _anchor='flashes'))
     
     new_vote = models.Votos(usuario_id=user.id, juego_id=game_id, jam_id=jam_id)
 

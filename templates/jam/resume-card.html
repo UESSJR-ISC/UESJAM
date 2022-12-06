@@ -1,0 +1,32 @@
+<div class="card text-white bg-dark">
+    <img
+        src="{{ url_for('static', filename='img/jam_covers/' + jam.cover) }}"
+        class="card-img-top"
+        alt="JAM Image cover">
+    <div class="card-body">
+        <h5 class="card-title">
+            {{ jam.titulo }}
+            {% if jam.opened == 1 %}
+                <span class="badge badge-success">Abierta</span>
+            {% else %}
+                <span class="badge badge-danger">Cerrada</span>
+            {% endif %}
+            <span class="badge badge-info">{{ jam.juegos|length }} Juegos</span>
+        </h5>
+        <p class="card-text">
+            <div
+                class="countdown"
+                data-start="{{ jam.fecha_inicio }}"
+                data-end="{{ jam.fecha_final }}">
+            </div>
+        </p>
+        <p class="card-text">
+            {% for tag in jam.tags.split(',') %}
+                <span class="badge badge-info">{{ tag }}</span>
+            {% endfor %}
+        </p>
+    </div>
+    <div class="card-footer">
+        <a href="{{ url_for('jam', id=jam.id) }}" class="btn btn-primary">¡Saber más!</a>
+    </div>
+</div>

@@ -2,8 +2,12 @@ from sqlalchemy import Date
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Integer
-from sqlalchemy import ForeignKey, select
-from sqlalchemy.orm import relationship, deferred
+from sqlalchemy import ForeignKey
+from sqlalchemy import select
+from sqlalchemy import func
+
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import deferred
 
 
 from database import Database
@@ -76,7 +80,7 @@ class Juegos(Database):
     archivos = relationship("Archivos", back_populates="juego")
     votos = relationship("Votos", back_populates="juego")
 
-    votos_count = deferred(select([Votos.id]).where(Votos.juego_id == id))
+    votos_count = deferred(select([func.count()]).where(Votos.juego_id == id))
 
 
 class Comentarios(Database):

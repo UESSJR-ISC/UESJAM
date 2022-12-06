@@ -21,12 +21,12 @@
         <i class="bi bi-controller"></i>
         Juegos
     </a><br>
-    <a class="btn btn-secondary mt-3" href="#">
-        <i class="bi bi-people"></i>
-        Equipos
-    </a><br>
     {% if user %}
-        <a class="btn btn-primary mt-3" href="{{ url_for('profile') }}">
+        <a class="btn btn-secondary mt-3" href="#">
+            <i class="bi bi-person"></i>
+            Perfil
+        </a><br>
+        <a class="btn btn-primary mt-3" href="#">
             Dashboard
         </a>
     {% endif %}

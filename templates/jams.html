@@ -14,23 +14,7 @@
                 <h5>¡Checa las JAMs abiertas!</h5>
                 <div class="card-group">
                     {% for jam in jams %}
-                        <div class="card text-white bg-dark">
-                            <img
-                                src="{{ url_for('static', filename='img/jam_covers/' + jam.cover) }}"
-                                class="card-img-top"
-                                alt="JAM Image cover">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ jam.titulo }}</h5>
-                                <p class="card-text">
-                                    {{ jam.descripcion }}
-                                </p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="{{ url_for('jam', id=jam.id) }}" class="btn btn-primary">
-                                    ¡Saber más!
-                                </a>
-                            </div>
-                        </div>
+                        {% include 'jam/resume-card.html' %}
                     {% endfor %}
                 </div>
             </div>
